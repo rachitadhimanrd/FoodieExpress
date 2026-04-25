@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Manage Delivery - Admin{% endblock %}
+{% block content %}
+<section class="admin-header"><div class="container"><h1><i class="fas fa-motorcycle"></i> Delivery Management</h1><a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">← Dashboard</a></div></section>
+<section class="section"><div class="container">
+<div class="admin-card">
+<h3>Add Delivery Person</h3>
+<form method="POST" action="{{ url_for('admin.add_delivery_person') }}" class="admin-form">
+<div class="form-row">
+<div class="form-group"><label>Name</label><input type="text" name="name" required></div>
+<div class="form-group"><label>Phone</label><input type="text" name="phone" required></div>
+<div class="form-group"><label>Vehicle</label><select name="vehicle_type"><option>Bike</option><option>Scooter</option><option>Car</option><option>Bicycle</option></select></div>
+</div>
+<button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</form></div>
+<div class="admin-card">
+<h3>Delivery Persons</h3>
+<div class="table-responsive"><table class="admin-table">
+<thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Vehicle</th><th>Status</th><th>Rating</th></tr></thead>
+<tbody>{% for p in persons %}<tr>
+<td>{{ p.delivery_id }}</td><td>{{ p.name }}</td><td>{{ p.phone }}</td><td>{{ p.vehicle_type }}</td>
+<td><span class="status-badge status-{{ p.status|lower }}">{{ p.status }}</span></td><td>⭐ {{ p.rating }}</td>
+</tr>{% endfor %}</tbody></table></div></div>
+{% if active %}
+<div class="admin-card">
+<h3>Active Deliveries</h3>
+<div class="table-responsive"><table class="admin-table">
+<thead><tr><th>Order</th><th>Driver</th><th>Status</th><th>Assigned</th></tr></thead>
+<tbody>{% for d in active %}<tr>
+<td>#{{ d.order_id }}</td><td>{{ d.delivery_person.name }}</td>
+<td><span class="status-badge">{{ d.delivery_status }}</span></td>
+<td>{{ d.assigned_time.strftime('%H:%M') }}</td>
+</tr>{% endfor %}</tbody></table></div></div>
+{% endif %}
+</div></section>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}{{ restaurant.name }} - Menu | Foodie Express{% endblock %}
+{% block content %}
+<!-- Restaurant Header -->
+<section class="restaurant-hero">
+    <div class="container">
+        <div class="restaurant-hero-content">
+            <div class="restaurant-hero-info">
+                <div class="breadcrumb">
+                    <a href="{{ url_for('main.restaurants') }}">Restaurants</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>{{ restaurant.name }}</span>
+                </div>
+                <h1>{{ restaurant.name }}</h1>
+                <p class="restaurant-hero-desc">{{ restaurant.description }}</p>
+                <div class="restaurant-meta">
+                    <span class="meta-badge meta-rating"><i class="fas fa-star"></i> {{ avg_rating }}</span>
+                    <span class="meta-badge"><i class="fas fa-utensils"></i> {{ restaurant.cuisine_type or 'Multi-Cuisine' }}</span>
+                    <span class="meta-badge"><i class="fas fa-clock"></i> {{ restaurant.delivery_time }}</span>
+                    <span class="meta-badge"><i class="fas fa-map-marker-alt"></i> {{ restaurant.location }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section menu-section">
+    <div class="container">
+        <div class="menu-layout">
+            <!-- Category Sidebar -->
+            <aside class="menu-sidebar" id="menu-sidebar">
+                <h3>Categories</h3>
+                <a href="{{ url_for('main.restaurant_menu', restaurant_id=restaurant.restaurant_id) }}" class="sidebar-link {% if not category_filter %}active{% endif %}">
+                    <span>All Items</span>
+                </a>
+                {% for cat in restaurant_categories %}
+                <a href="{{ url_for('main.restaurant_menu', restaurant_id=restaurant.restaurant_id, category=cat.name) }}" class="sidebar-link {% if category_filter == cat.name %}active{% endif %}">
+                    <span>{{ cat.icon|safe }} {{ cat.name }}</span>
+                </a>
+                {% endfor %}
+            </aside>
+
+            <!-- Menu Items -->
+            <div class="menu-content">
+                {% for cat_name, cat_data in categories_with_items.items() %}
+                <div class="menu-category-block" id="cat-{{ cat_name|lower|replace(' ','-') }}">
+                    <h2 class="menu-category-title">{{ cat_data.icon|safe }} {{ cat_name }}</h2>
+                    <div class="menu-items-grid">
+                        {% for item in cat_data['items'] %}
+                        <div class="menu-item-card" id="menu-item-{{ item.item_id }}">
+                            <div class="menu-item-body">
+                                <h3 class="menu-item-name">{{ item.item_name }}</h3>
+                                <p class="menu-item-desc">{{ item.description or '' }}</p>
+                                <div class="menu-item-price">₹{{ "%.0f"|format(item.price) }}</div>
+                            </div>
+                            <div class="menu-item-image" style="margin-left: auto; margin-right: 1rem;">
+                                {% if item.image_url %}
+                                <img src="{{ item.image_url }}" alt="{{ item.item_name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                {% endif %}
+                            </div>
+                            <div class="menu-item-action">
+                                {% if current_user.is_authenticated %}
+                                <button class="btn btn-add-cart" onclick="addToCart({{ item.item_id }})" id="add-btn-{{ item.item_id }}">
+                                    <i class="fas fa-plus"></i> ADD
+                                </button>
+                                {% else %}
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-add-cart">
+                                    <i class="fas fa-plus"></i> ADD
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if not categories_with_items %}
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3>No items available</h3>
+                    <p>This restaurant hasn't added menu items yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section" id="reviews">
+            <h2 class="section-title">Customer <span class="text-accent">Reviews</span></h2>
+            {% if current_user.is_authenticated %}
+            <div class="review-form-card">
+                <h3>Leave a Review</h3>
+                <form method="POST" action="{{ url_for('reviews.add_restaurant_review') }}" class="review-form" id="review-form">
+                    <input type="hidden" name="restaurant_id" value="{{ restaurant.restaurant_id }}">
+                    <div class="star-rating-input" id="star-rating">
+                        {% for i in range(1, 6) %}
+                        <input type="radio" name="rating" value="{{ i }}" id="star-{{ i }}" required>
+                        <label for="star-{{ i }}"><i class="fas fa-star"></i></label>
+                        {% endfor %}
+                    </div>
+                    <textarea name="comment" placeholder="Share your experience..." rows="3"></textarea>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+            {% endif %}
+            <div class="reviews-list">
+                {% for rev in reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-user">
+                            <div class="review-avatar">{{ rev.user.name[0] }}</div>
+                            <div>
+                                <strong>{{ rev.user.name }}</strong>
+                                <small>{{ rev.created_at.strftime('%b %d, %Y') }}</small>
+                            </div>
+                        </div>
+                        <div class="review-stars">
+                            {% for i in range(rev.rating) %}<i class="fas fa-star"></i>{% endfor %}
+                            {% for i in range(5 - rev.rating) %}<i class="far fa-star"></i>{% endfor %}
+                        </div>
+                    </div>
+                    {% if rev.comment %}<p class="review-comment">{{ rev.comment }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                {% if not reviews %}
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

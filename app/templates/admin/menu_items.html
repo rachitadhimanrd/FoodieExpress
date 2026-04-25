@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Manage Menu Items - Admin{% endblock %}
+{% block content %}
+<section class="admin-header"><div class="container"><h1><i class="fas fa-utensils"></i> Manage Menu Items</h1><a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">← Dashboard</a></div></section>
+<section class="section"><div class="container">
+<div class="admin-card">
+<h3>Add Menu Item</h3>
+<form method="POST" action="{{ url_for('admin.add_menu_item') }}" class="admin-form">
+<div class="form-row">
+<div class="form-group"><label>Item Name</label><input type="text" name="item_name" required></div>
+<div class="form-group"><label>Price (₹)</label><input type="number" name="price" step="0.01" required></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Restaurant</label><select name="restaurant_id" required>{% for r in restaurants %}<option value="{{ r.restaurant_id }}">{{ r.name }}</option>{% endfor %}</select></div>
+<div class="form-group"><label>Category</label><select name="category_id" required>{% for c in categories %}<option value="{{ c.category_id }}">{{ c.icon }} {{ c.name }}</option>{% endfor %}</select></div>
+</div>
+<div class="form-group"><label>Description</label><input type="text" name="description"></div>
+<button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</form></div>
+<div class="admin-card"><div class="table-responsive"><table class="admin-table">
+<thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Restaurant</th><th>Category</th><th>Action</th></tr></thead>
+<tbody>{% for item in items %}<tr>
+<td>{{ item.item_id }}</td><td>{{ item.item_name }}</td><td>₹{{ "%.0f"|format(item.price) }}</td>
+<td>{{ item.restaurant.name }}</td><td>{{ item.category.name }}</td>
+<td><form method="POST" action="{{ url_for('admin.delete_menu_item', iid=item.item_id) }}" style="display:inline" onsubmit="return confirm('Delete?')"><button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></form></td>
+</tr>{% endfor %}</tbody></table></div></div>
+</div></section>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Track Order #{{ order.order_id }} - Foodie Express{% endblock %}
+{% block content %}
+<section class="page-header page-header-sm">
+    <div class="container">
+        <h1 class="page-title">Order <span class="text-accent">#{{ order.order_id }}</span></h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <div class="tracking-layout">
+            <div class="tracking-main">
+                <!-- Status Timeline -->
+                <div class="tracking-card">
+                    <h3>Order Status</h3>
+                    <div class="tracking-timeline">
+                        {% for status in statuses %}
+                        {% set i = loop.index0 %}
+                        <div class="timeline-step {% if i <= current_index %}step-completed{% endif %} {% if i == current_index %}step-current{% endif %}">
+                            <div class="timeline-dot">
+                                {% if i < current_index %}<i class="fas fa-check"></i>
+                                {% elif i == current_index %}<i class="fas fa-spinner fa-pulse"></i>
+                                {% else %}<span>{{ i + 1 }}</span>{% endif %}
+                            </div>
+                            <div class="timeline-label">{{ status }}</div>
+                        </div>
+                        {% if not loop.last %}
+                        <div class="timeline-line {% if i < current_index %}line-completed{% endif %}"></div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Delivery Info -->
+                {% if delivery %}
+                <div class="tracking-card">
+                    <h3><i class="fas fa-motorcycle"></i> Delivery Partner</h3>
+                    <div class="delivery-info">
+                        <div class="delivery-person-card">
+                            <div class="dp-avatar">{{ delivery.delivery_person.name[0] }}</div>
+                            <div>
+                                <strong>{{ delivery.delivery_person.name }}</strong>
+                                <p>{{ delivery.delivery_person.vehicle_type }} • {{ delivery.delivery_person.phone }}</p>
+                            </div>
+                        </div>
+                        <div class="delivery-timeline-mini">
+                            <p><i class="fas fa-clock"></i> Assigned: {{ delivery.assigned_time.strftime('%I:%M %p') }}</p>
+                            {% if delivery.picked_time %}
+                            <p><i class="fas fa-box"></i> Picked: {{ delivery.picked_time.strftime('%I:%M %p') }}</p>
+                            {% endif %}
+                            {% if delivery.delivered_time %}
+                            <p><i class="fas fa-check-circle"></i> Delivered: {{ delivery.delivered_time.strftime('%I:%M %p') }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="tracking-sidebar">
+                <div class="tracking-card">
+                    <h3>Order Details</h3>
+                    <p class="text-muted">{{ order.order_date.strftime('%b %d, %Y at %I:%M %p') }}</p>
+                    {% if order.restaurant %}
+                    <p><strong>{{ order.restaurant.name }}</strong></p>
+                    {% else %}
+                    <p><strong>Multiple Restaurants</strong></p>
+                    {% endif %}
+                    <div class="summary-divider"></div>
+                    {% for oi in order_items %}
+                    <div class="checkout-item">
+                        <span>{{ oi.menu_item.item_name }} × {{ oi.quantity }}</span>
+                        <span>₹{{ "%.0f"|format(oi.price * oi.quantity) }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="summary-divider"></div>
+                    {% if order.discount_amount > 0 %}
+                    <div class="summary-row">
+                        <span>Discount</span>
+                        <span class="text-success">-₹{{ "%.0f"|format(order.discount_amount) }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <span>₹{{ "%.0f"|format(order.total_amount) }}</span>
+                    </div>
+                    {% if payment %}
+                    <div class="payment-status-badge badge-{{ payment.payment_status|lower }}">
+                        {{ payment.payment_mode }} - {{ payment.payment_status }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

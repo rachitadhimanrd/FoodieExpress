@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Your Cart - Foodie Express{% endblock %}
+{% block content %}
+<section class="page-header page-header-sm">
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-shopping-bag"></i> Your <span class="text-accent">Cart</span></h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        {% if cart_items %}
+        <div class="cart-layout">
+            <div class="cart-items-list">
+                {% if restaurant %}
+                <div class="cart-restaurant-header">
+                    <i class="fas fa-store"></i>
+                    <span>Ordering from <strong>{{ restaurant.name }}</strong></span>
+                </div>
+                {% endif %}
+                {% for ci in cart_items %}
+                <div class="cart-item" id="cart-item-{{ ci.cart_item_id }}">
+                    <div class="cart-item-info">
+                        <h3>{{ ci.item.item_name }}</h3>
+                        <p class="cart-item-price">₹{{ "%.0f"|format(ci.item.price) }} each</p>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="updateCartItem({{ ci.cart_item_id }}, {{ ci.quantity - 1 }})">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="qty-value" id="qty-{{ ci.cart_item_id }}">{{ ci.quantity }}</span>
+                            <button class="qty-btn" onclick="updateCartItem({{ ci.cart_item_id }}, {{ ci.quantity + 1 }})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="cart-item-total" id="total-{{ ci.cart_item_id }}">₹{{ "%.0f"|format(ci.total) }}</div>
+                        <button class="btn-icon btn-remove" onclick="removeCartItem({{ ci.cart_item_id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">₹{{ "%.0f"|format(subtotal) }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Fee</span>
+                    <span class="text-success">FREE</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                    <span>Total</span>
+                    <span id="cart-total">₹{{ "%.0f"|format(subtotal) }}</span>
+                </div>
+                <a href="{{ url_for('orders.checkout') }}" class="btn btn-primary btn-full btn-lg" id="checkout-btn">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </a>
+                <form method="POST" action="{{ url_for('cart.clear_cart') }}" style="margin-top: 0.5rem;">
+                    <button type="submit" class="btn btn-outline btn-full btn-sm">
+                        <i class="fas fa-trash"></i> Clear Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <h3>Your cart is empty</h3>
+            <p>Add some delicious food to get started!</p>
+            <a href="{{ url_for('main.restaurants') }}" class="btn btn-primary">Browse Restaurants</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

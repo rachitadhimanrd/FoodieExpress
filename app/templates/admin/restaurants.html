@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Manage Restaurants - Admin{% endblock %}
+{% block content %}
+<section class="admin-header"><div class="container"><h1><i class="fas fa-store"></i> Manage Restaurants</h1><a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">← Dashboard</a></div></section>
+<section class="section"><div class="container">
+<!-- Add Form -->
+<div class="admin-card">
+<h3>Add Restaurant</h3>
+<form method="POST" action="{{ url_for('admin.add_restaurant') }}" class="admin-form">
+<div class="form-row">
+<div class="form-group"><label>Name</label><input type="text" name="name" required></div>
+<div class="form-group"><label>Location</label><input type="text" name="location" required></div>
+<div class="form-group"><label>Cuisine Type</label><input type="text" name="cuisine_type"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Description</label><input type="text" name="description"></div>
+<div class="form-group"><label>Delivery Time</label><input type="text" name="delivery_time" value="30-45 min"></div>
+</div>
+<button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</form>
+</div>
+<!-- Table -->
+<div class="admin-card">
+<div class="table-responsive"><table class="admin-table">
+<thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Cuisine</th><th>Rating</th><th>Action</th></tr></thead>
+<tbody>{% for r in restaurants %}<tr>
+<td>{{ r.restaurant_id }}</td><td>{{ r.name }}</td><td>{{ r.location }}</td><td>{{ r.cuisine_type or '-' }}</td><td>⭐ {{ r.rating }}</td>
+<td><form method="POST" action="{{ url_for('admin.delete_restaurant', rid=r.restaurant_id) }}" style="display:inline" onsubmit="return confirm('Delete?')"><button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></form></td>
+</tr>{% endfor %}</tbody></table></div></div>
+</div></section>
+{% endblock %}

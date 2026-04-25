@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Restaurants - Foodie Express{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Explore <span class="text-accent">Restaurants</span></h1>
+        <p class="page-subtitle">Find the best food from top-rated restaurants</p>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <!-- Search & Filter Bar -->
+        <div class="filter-bar" id="filter-bar">
+            <form class="filter-form" action="{{ url_for('main.restaurants') }}" method="GET">
+                <div class="search-input-wrap search-dark">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="{{ search }}" placeholder="Search restaurants, cuisines, locations...">
+                </div>
+                <div class="search-input-wrap search-dark" style="flex: 0.5;">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <select name="area" style="width: 100%; border: none; outline: none; background: transparent; padding: .8rem 0; font-size: .95rem;">
+                        <option value="">All Areas</option>
+                        {% for area in areas %}
+                        <option value="{{ area }}" {% if area_filter == area %}selected{% endif %}>{{ area }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            </form>
+            <div class="filter-chips">
+                <a href="{{ url_for('main.restaurants') }}" class="chip {% if not category_filter %}chip-active{% endif %}">All</a>
+                {% for cat in categories %}
+                <a href="{{ url_for('main.restaurants', category=cat.name) }}" class="chip {% if category_filter == cat.name %}chip-active{% endif %}">
+                    {{ cat.icon|safe }} {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Restaurant Grid -->
+        {% if restaurants %}
+        <div class="restaurant-grid">
+            {% for r in restaurants %}
+            <a href="{{ url_for('main.restaurant_menu', restaurant_id=r.restaurant_id) }}" class="restaurant-card" id="rest-card-{{ r.restaurant_id }}">
+                <div class="restaurant-card-img">
+                    {% if r.image_url %}
+                    <img src="{{ r.image_url }}" alt="{{ r.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                    <div class="restaurant-card-placeholder">
+                        <span>{{ r.name[0] }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="restaurant-badge"><i class="fas fa-star"></i> {{ r.rating }}</div>
+                    {% if r.cuisine_type %}
+                    <div class="restaurant-cuisine-tag">{{ r.cuisine_type }}</div>
+                    {% endif %}
+                </div>
+                <div class="restaurant-card-body">
+                    <h3 class="restaurant-card-title">{{ r.name }}</h3>
+                    <p class="restaurant-card-desc">{{ r.description[:80] }}{% if r.description|length > 80 %}...{% endif %}</p>
+                    <div class="restaurant-card-footer">
+                        <span class="restaurant-card-time"><i class="fas fa-clock"></i> {{ r.delivery_time }}</span>
+                        <span class="restaurant-card-location"><i class="fas fa-map-marker-alt"></i> {{ r.location.split(',')[0] }}</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h3>No restaurants found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+            <a href="{{ url_for('main.restaurants') }}" class="btn btn-primary">Clear Filters</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

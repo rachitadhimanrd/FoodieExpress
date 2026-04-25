@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Payment - Foodie Express{% endblock %}
+{% block content %}
+<section class="page-header page-header-sm">
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-credit-card"></i> <span class="text-accent">Payment</span></h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <div class="payment-layout">
+            <div class="payment-card-main">
+                <div class="payment-card">
+                    <h2>Complete Your Payment</h2>
+                    <p class="text-muted">Order #{{ order.order_id }} • ₹{{ "%.0f"|format(order.total_amount) }}</p>
+                    <form method="POST" action="{{ url_for('payments.process_payment') }}" id="payment-form">
+                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                        <div class="payment-methods">
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment_mode" value="UPI" {% if not payment or payment.payment_mode == 'UPI' %}checked{% endif %}>
+                                <div class="method-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <div class="method-info"><strong>UPI</strong><small>Pay via UPI apps</small></div>
+                            </label>
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment_mode" value="Cash on Delivery" {% if payment and payment.payment_mode == 'Cash on Delivery' %}checked{% endif %}>
+                                <div class="method-icon"><i class="fas fa-money-bill-wave"></i></div>
+                                <div class="method-info"><strong>Cash on Delivery</strong><small>Pay when delivered</small></div>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full btn-lg" id="pay-btn">
+                            <i class="fas fa-lock"></i> Pay ₹{{ "%.0f"|format(order.total_amount) }}
+                        </button>
+                    </form>
+                    <p class="payment-secure"><i class="fas fa-shield-alt"></i> Your payment is secure and encrypted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Foodie Express{% endblock %}
+{% block content %}
+<section class="admin-header">
+    <div class="container">
+        <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card stat-blue">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info"><h3>{{ stats.users }}</h3><p>Total Users</p></div>
+            </div>
+            <div class="stat-card stat-green">
+                <div class="stat-icon"><i class="fas fa-store"></i></div>
+                <div class="stat-info"><h3>{{ stats.restaurants }}</h3><p>Restaurants</p></div>
+            </div>
+            <div class="stat-card stat-orange">
+                <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="stat-info"><h3>{{ stats.orders }}</h3><p>Total Orders</p></div>
+            </div>
+            <div class="stat-card stat-purple">
+                <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-info"><h3>₹{{ "%.0f"|format(stats.revenue) }}</h3><p>Revenue</p></div>
+            </div>
+        </div>
+        <!-- Quick Links -->
+        <div class="admin-nav-grid">
+            <a href="{{ url_for('admin.manage_users') }}" class="admin-nav-card"><i class="fas fa-users"></i><span>Users</span></a>
+            <a href="{{ url_for('admin.manage_restaurants') }}" class="admin-nav-card"><i class="fas fa-store"></i><span>Restaurants</span></a>
+            <a href="{{ url_for('admin.manage_menu_items') }}" class="admin-nav-card"><i class="fas fa-utensils"></i><span>Menu Items</span></a>
+            <a href="{{ url_for('admin.manage_categories') }}" class="admin-nav-card"><i class="fas fa-tags"></i><span>Categories</span></a>
+            <a href="{{ url_for('admin.manage_coupons') }}" class="admin-nav-card"><i class="fas fa-ticket-alt"></i><span>Coupons</span></a>
+            <a href="{{ url_for('admin.manage_orders') }}" class="admin-nav-card"><i class="fas fa-receipt"></i><span>Orders</span></a>
+            <a href="{{ url_for('admin.manage_delivery') }}" class="admin-nav-card"><i class="fas fa-motorcycle"></i><span>Delivery</span></a>
+        </div>
+        <!-- Recent Orders -->
+        <div class="admin-card">
+            <h3>Recent Orders</h3>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>ID</th><th>Customer</th><th>Restaurant</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for o in recent_orders %}
+                        <tr>
+                            <td>#{{ o.order_id }}</td>
+                            <td>{{ o.user.name }}</td>
+                            <td>{{ o.restaurant.name }}</td>
+                            <td>₹{{ "%.0f"|format(o.total_amount) }}</td>
+                            <td><span class="status-badge status-{{ o.order_status|lower|replace(' ','-') }}">{{ o.order_status }}</span></td>
+                            <td>{{ o.order_date.strftime('%b %d, %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Checkout - Foodie Express{% endblock %}
+{% block content %}
+<section class="page-header page-header-sm">
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-receipt"></i> <span class="text-accent">Checkout</span></h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <form method="POST" action="{{ url_for('orders.place_order') }}" id="checkout-form">
+            <div class="checkout-layout">
+                <div class="checkout-details">
+                    <div class="checkout-card">
+                        <h3><i class="fas fa-map-marker-alt"></i> Delivery Address</h3>
+                        <textarea name="delivery_address" rows="3" required placeholder="Enter your full delivery address">{{ current_user.address or '' }}</textarea>
+                    </div>
+                    <div class="checkout-card">
+                        <h3><i class="fas fa-comment"></i> Special Instructions</h3>
+                        <textarea name="special_instructions" rows="2" placeholder="Any special requests? (optional)"></textarea>
+                    </div>
+                    <div class="checkout-card">
+                        <h3><i class="fas fa-credit-card"></i> Payment Method</h3>
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="payment_mode" value="UPI" checked>
+                                <div class="payment-option-content">
+                                    <i class="fas fa-mobile-alt"></i> <span>UPI</span>
+                                </div>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_mode" value="Cash on Delivery">
+                                <div class="payment-option-content">
+                                    <i class="fas fa-money-bill-wave"></i> <span>Cash on Delivery</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Coupon -->
+                    <div class="checkout-card">
+                        <h3><i class="fas fa-tag"></i> Apply Coupon</h3>
+                        <div class="coupon-input-wrap">
+                            <input type="text" id="checkout-coupon" placeholder="Enter coupon code">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="applyCheckoutCoupon()">Apply</button>
+                        </div>
+                        <input type="hidden" name="coupon_id" id="checkout-coupon-id" value="">
+                        <p class="coupon-msg" id="checkout-coupon-msg"></p>
+                    </div>
+                </div>
+                <div class="checkout-summary">
+                    <h3>Order Summary</h3>
+                    <div class="checkout-items">
+                        {% for ci in cart_items %}
+                        <div class="checkout-item">
+                            <span class="checkout-item-name">{{ ci.item.item_name }} × {{ ci.quantity }}</span>
+                            <span>₹{{ "%.0f"|format(ci.total) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>₹{{ "%.0f"|format(subtotal) }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery</span>
+                        <span class="text-success">FREE</span>
+                    </div>
+                    <div class="summary-row summary-discount" id="co-discount-row" style="display:none">
+                        <span>Discount</span>
+                        <span class="text-success" id="co-discount-val">-₹0</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <span id="co-total">₹{{ "%.0f"|format(subtotal) }}</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full btn-lg" id="place-order-btn">
+                        <i class="fas fa-check"></i> Place Order
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+    const subtotal = {{ subtotal }};
+    function applyCheckoutCoupon() {
+        const code = document.getElementById('checkout-coupon').value;
+        fetch('/cart/apply-coupon', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({code})
+        }).then(r=>r.json()).then(data => {
+            const msg = document.getElementById('checkout-coupon-msg');
+            if (data.success) {
+                msg.textContent = data.message;
+                msg.className = 'coupon-msg coupon-success';
+                document.getElementById('checkout-coupon-id').value = data.coupon_id;
+                document.getElementById('co-discount-row').style.display = 'flex';
+                document.getElementById('co-discount-val').textContent = '-₹' + data.discount.toFixed(0);
+                document.getElementById('co-total').textContent = '₹' + (subtotal - data.discount).toFixed(0);
+            } else {
+                msg.textContent = data.message;
+                msg.className = 'coupon-msg coupon-error';
+            }
+        });
+    }
+</script>
+{% endblock %}
