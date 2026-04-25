@@ -56,7 +56,7 @@
                 </div>
                 <div class="restaurant-card-body">
                     <h3 class="restaurant-card-title">{{ r.name }}</h3>
-                    <p class="restaurant-card-desc">{{ r.description[:80] }}{% if r.description|length > 80 %}...{% endif %}</p>
+                    <p class="restaurant-card-desc">{{ (r.description or '')[:80] }}{% if r.description and r.description|length > 80 %}...{% endif %}</p>
                     <div class="restaurant-card-footer">
                         <span class="restaurant-card-time"><i class="fas fa-clock"></i> {{ r.delivery_time }}</span>
                         <span class="restaurant-card-location"><i class="fas fa-map-marker-alt"></i> {{ r.location.split(',')[0] }}</span>

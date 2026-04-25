@@ -23,12 +23,12 @@ def seed():
         db.session.commit()
         
         # Restaurants
-        r1 = Restaurant(name='Punjabi Rasoi', cuisine_type='North Indian', rating=4.5, delivery_time='30-40 min', image_url='https://images.unsplash.com/photo-1585937421606-2b509f6b47cc?w=500&q=80', location='Sector 15, City')
-        r2 = Restaurant(name='Pizza House', cuisine_type='Italian', rating=4.2, delivery_time='25-35 min', image_url='https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80', location='Mall Road, City')
-        r3 = Restaurant(name='Wok Express', cuisine_type='Chinese', rating=4.0, delivery_time='20-30 min', image_url='https://images.unsplash.com/photo-1552611052-33e04de081de?w=500&q=80', location='Central Market, City')
-        r4 = Restaurant(name='Burger King', cuisine_type='Fast Food', rating=4.3, delivery_time='15-25 min', image_url='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', location='Down Town, City')
-        r5 = Restaurant(name='Healthy Bites', cuisine_type='Salads & Bowls', rating=4.6, delivery_time='30-45 min', image_url='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80', location='Green Park, City')
-        r6 = Restaurant(name='Tandoori Nights', cuisine_type='North Indian', rating=4.4, delivery_time='35-50 min', image_url='https://images.unsplash.com/photo-1628294895950-9805252327bc?w=500&q=80', location='Old City, City')
+        r1 = Restaurant(name='Punjabi Rasoi', cuisine_type='North Indian', rating=4.5, delivery_time='30-40 min', image_url='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80', location='Sector 15, City', description='Authentic North Indian flavors with a modern twist.')
+        r2 = Restaurant(name='Pizza House', cuisine_type='Italian', rating=4.2, delivery_time='25-35 min', image_url='https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80', location='Mall Road, City', description='The best wood-fired pizzas in town.')
+        r3 = Restaurant(name='Wok Express', cuisine_type='Chinese', rating=4.0, delivery_time='20-30 min', image_url='https://images.unsplash.com/photo-1552611052-33e04de081de?w=500&q=80', location='Central Market, City', description='Fast and delicious stir-fry and dim sums.')
+        r4 = Restaurant(name='Burger King', cuisine_type='Fast Food', rating=4.3, delivery_time='15-25 min', image_url='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', location='Down Town, City', description='Juicy burgers and crispy fries.')
+        r5 = Restaurant(name='Healthy Bites', cuisine_type='Salads & Bowls', rating=4.6, delivery_time='30-45 min', image_url='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80', location='Green Park, City', description='Fresh ingredients for a healthier you.')
+        r6 = Restaurant(name='Tandoori Nights', cuisine_type='North Indian', rating=4.4, delivery_time='35-50 min', image_url='https://images.unsplash.com/photo-1628294895950-9805252327bc?w=500&q=80', location='Old City, City', description='Experience the magic of traditional clay oven cooking.')
         
         db.session.add_all([r1, r2, r3, r4, r5, r6])
         db.session.commit()
